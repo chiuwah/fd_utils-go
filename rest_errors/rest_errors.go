@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-//v0.1.0
+//v0.1.1
 
 type RestErr struct {
 	Message string        `json:"message"`
@@ -37,8 +37,8 @@ func NewNotFoundError(message string) *RestErr {
 func NewUnauthorizedError() *RestErr {
 	return &RestErr{
 		Message: "unable to retrieve user information from given access_token",
-		Status: http.StatusUnauthorized,
-		Error: "unauthorized",
+		Status:  http.StatusUnauthorized,
+		Error:   "unauthorized",
 	}
 }
 
