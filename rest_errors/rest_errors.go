@@ -5,6 +5,8 @@ import (
 	"net/http"
 )
 
+//v0.1.0
+
 type RestErr struct {
 	Message string        `json:"message"`
 	Status  int           `json:"status"`
