@@ -4,8 +4,6 @@ import (
 	"errors"
 	"net/http"
 )
-git
-//v0.1.1
 
 type RestErr struct {
 	Message string        `json:"message"`
