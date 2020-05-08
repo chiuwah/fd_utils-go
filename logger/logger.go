@@ -4,16 +4,24 @@ import (
 	"fmt"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"os"
+	"strings"
+)
+
+const (
+	envLogLevel  = "LOG_LEVEL"
+	envLogOutput = "LOG_OUTPUT"
 )
 
 var (
 	log logger
 )
 
-type fdLogger interface{
+type fdLogger interface {
+	Print(v ...interface{})
 	Printf(format string, v ...interface{})
-//	Info(msg string, tags ...zap.Field)
-//	Error(msg string, err error, tags ...zap.Field)
+	//	Info(msg string, tags ...zap.Field)
+	//	Error(msg string, err error, tags ...zap.Field)
 }
 
 type logger struct {
@@ -23,7 +31,7 @@ type logger struct {
 func init() {
 	logConfig := zap.Config{
 		OutputPaths: []string{"stdout"},
-		Level:       zap.NewAtomicLevelAt(zap.InfoLevel),
+		Level:       zap.NewAtomicLevelAt(GetLevel()),
 		Encoding:    "json",
 		EncoderConfig: zapcore.EncoderConfig{
 			MessageKey:     "msg",
@@ -47,6 +55,27 @@ func init() {
 
 }
 
+func getOutput() string {
+	output := strings.TrimSpace(os.Getenv(envLogOutput))
+	if output == "" {
+		return "stdout"
+	}
+	return output
+}
+
+func GetLevel() zapcore.Level {
+	switch strings.ToLower(strings.TrimSpace(os.Getenv(envLogLevel))) {
+	case "debug":
+		return zap.DebugLevel
+	case "info":
+		return zap.InfoLevel
+	case "error":
+		return zap.ErrorLevel
+	default:
+		return zap.InfoLevel
+	}
+}
+
 func GetLogger() fdLogger {
 	return log
 }
@@ -57,6 +86,10 @@ func (l logger) Printf(format string, v ...interface{}) {
 	} else {
 		Info(fmt.Sprintf(format, v))
 	}
+}
+
+func (l logger) Print(v ...interface{}) {
+	Info(fmt.Sprintf("%v", v))
 }
 
 func Info(msg string, tags ...zap.Field) {
